@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicacion de mensajes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Generador de Mensajes</h1>
+        <p class="text-gray-600 mb-4">Ingresa tu nombre para recibir un saludo personalizado:</p>
+        
+        <input 
+            type="text" 
+            id="nombreInput" 
+            placeholder="Escribí tu nombre aca" 
+            class="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        
+        <button 
+            id="enviarBtn" 
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-md transition duration-200"
+        >
+            Obtener Saludo
+        </button>
+        
+        <div 
+            id="mensajeContainer" 
+            class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-md text-blue-800 hidden"
+        ></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // obtenemos los elementos del DOM q vamos a usar
+            const nombreInput = document.getElementById('nombreInput')
+            const enviarBtn = document.getElementById('enviarBtn')
+            const mensajeContainer = document.getElementById('mensajeContainer')
+            
+            enviarBtn.addEventListener('click', async () => {
+                // agarramos el valor del input
+                const nombre = nombreInput.value.trim()
+                
+                // verificamos que el usuario escribió o no
+                if (nombre === '') {
+                    alert('escriba su nombre por favor')
+                    return
+                }
+                
+                try {
+                    // armamos la url con el nombre
+                    const url = `http://localhost:3000/api/saludo/${encodeURIComponent(nombre)}`
+                    
+                    // hacemos la peticion GET al servidor
+                    const respuesta = await fetch(url)
+                    
+                    // convertimos la respuesta a json
+                    const datos = await respuesta.json()
+                    
+                    // mostramos el mensaje en el contenedor
+                    mensajeContainer.textContent = datos.mensaje
+                    mensajeContainer.classList.remove('hidden')
+                    
+                } catch (error) {
+                    // si hay algun error lo mostramos
+                    console.error('error :', error)
+                    mensajeContainer.textContent = 'no se pudo conectar con el servidor, reintente despues'
+                    mensajeContainer.classList.remove('hidden')
+                }
+            })
+        })
+    </script>
+    <!-- lo hice todo aca para que sea mas compacto el proyecto, podia hacer aparte pero este me quedo mas a mano porque tambien tuve que rehacer el estilo ya que preferi usar tailwind nomas -->
+</body>
+</html>
